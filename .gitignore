@@ -2,3 +2,5 @@
 .project
 .jshintrc
 /.settings
+/.idea
+.DS_Store

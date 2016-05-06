@@ -1,55 +1,63 @@
-
 # Camerapi
 
 Camera PI is a module that allow to use the Raspberry PI camera from Node.JS
 
+It wraps the native `raspistill` and `raspivid` commands found with your distro.
+
 ## To Install
 
-	npm install camerapi
+```bash
+npm install camerapi
+```
 
 ## Usage
 
-	var Camera = require("camerapi");
-
-	var cam = new Camera();
+```javascript
+var Camera = require('camerapi');
+var cam = new Camera();
+```
 
 By default if you don't specify any file name,it tries to find a folder called pictures inside the module
-you can set the directory with : 
+you can set the directory with:
 
-	cam.baseFolder('/YOUR_BASE_DIRECTORY');
+```javascript
+cam.baseFolder('/YOUR_BASE_DIRECTORY');
 
-	cam.prepare({"timeout" : 150, 
-			 "width" : 2592,
-			 "height" : 1944,
-			 "quality" : 85
-		   }).takePicture();
-		   
-If you decided to use this type of implementation you can use any parameter, just add it as a 
-key:value attribute.
+cam.prepare({
+    timeout: 150,
+    width:   2592,
+    height:  1944,
+    quality: 85
+}).takePicture();
+```
 
-	cam.prepare({"timeout" : 150, 
-			 "width" : 2592,
-			 "height" : 1944,
-			 "quality" : 85,
-			 "vflip" : "",
-			 ..,
-			 ..,
-			 ..
-		   }).takePicture();
- 
+If you decided to use this type of implementation you can use any parameter, just add it as a
+`key: value` attribute.
+
+```javascript
+cam.prepare({
+    timeout: 150,
+    width:   2592,
+    height:  1944,
+    quality: 85,
+    vflip:   true
+}).takePicture();
+```
 
 Or
 
-	cam.prepare({"timeout" : 150, 
-			 "width" : 2592,
-			 "height" : 1944,
-			 "quality" : 85
-		   }).takePicture("mypicture.jpg");
+```javascript
+cam.prepare({
+    timeout: 150,
+    width: 2592,
+    height: 1944,
+    quality: 85
+}).takePicture('mypicture.jpg');
+```
 
+Or
 
-Or 
-
-	cam.prepare({"timeout" : 150, 
+	cam.prepare({"timeout" : 150,
 			 "width" : 2592,
 			 "height" : 1944,
 			 "quality" : 85,
@@ -60,20 +68,20 @@ Or
 Or
 
 
-	cam.prepare({"timeout" : 150, 
+	cam.prepare({"timeout" : 150,
 			 "width" : 2592,
 			 "height" : 1944,
 			 "quality" : 85
 		   }).takePicture("mypicture.jpg",callback);
-		   
+
 	function callback(file,error){
-	
+
 		//do some fun stuff
-	
+
 	}
-		 
-Or		 
-		   
+
+Or
+
 	cam.timeout(150)
 	.width(1024)
 	.height(768)
@@ -141,18 +149,18 @@ Or
 	.recordVideo("myvideo.h264",callback);
 
 	function callback(file,error){
-	
+
 		//do some fun stuff
-	
+
 	}
 
 So every time you take a picture without filename it creates a file with the current date in the base folder.
-  
+
 ## More information
 
 For more information about the raspberry pi camera module, see the [official documentation](http://www.raspberrypi.org/documentation/raspbian/applications/camera.md)
 
- 
+
 
 ## License
 

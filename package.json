@@ -1,6 +1,6 @@
 {
   "name": "camerapi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Raspberry Pi Camera module",
   "main": "index.js",
   "keywords": [
@@ -11,7 +11,10 @@
   ],
   "repository": {
     "type": "git",
-	"url": "git://github.com/leandroosalas/camerapi.git"
+    "url": "git://github.com/leandroosalas/camerapi.git"
+  },
+  "dependencies": {
+    "lodash": "^4.6.1"
   },
   "author": "Leandro Salas",
   "license": "MIT"
