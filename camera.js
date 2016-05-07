@@ -8,7 +8,7 @@ module.exports = function Camera () {
     this.filename   = null;
     this.folder     = null;
     this.command    = '';
-    this.parameters = [];
+    this.parameters = {};
 
     /**
      * Take a Photo
@@ -17,7 +17,6 @@ module.exports = function Camera () {
      * @param {function}         callback
      */
     this.takePicture = function takePicture (file, callback) {
-
         // Support for takePicture(cb) instead of providing file
         if (typeof file === 'function') {
             callback = file;
@@ -45,18 +44,17 @@ module.exports = function Camera () {
         this.command = 'raspistill';
         var self = this;
 
-        _.map(this.parameters, function (value, parameter) {
-            if (value === true) {
+        for (var key in this.parameters) {
+            if (this.parameters[key] === true) {
                 // This is a switch, only needs the parameter not the value
-                self.command += ' ' + key;
+                this.command += ' ' + key;
             } else {
-                self.command += util.format(' %s "%s"', key, parameter);
+                this.command += util.format(' %s "%s"', key, this.parameters[key]);
             }
-        });
+        }
 
         var exec = require('child_process').exec;
-
-        exec(this.command,function (error, stdout, stderr) {
+        exec(this.command, function (error, stdout, stderr) {
             if (typeof callback === 'function') {
                 callback(self.filename, stderr);
             }
@@ -70,50 +68,52 @@ module.exports = function Camera () {
      * @param {function}         callback
      */
     this.recordVideo = function (file, callback) {
-
-        if (typeof(file) == "function") {
+        // Support for recordVideo(cb) instead of providing file
+        if (typeof file === 'function') {
             callback = file;
-            file=null;
+            file     = null;
         }
 
-        if(!this.folder){
+        // Use a default base folder if not specifically set
+        if (!this.folder) {
             this.folder = util.format("%s/videos", __dirname);
         }
 
-        if(file){
-            this.filename = util.format("%s/%s", this.folder, file);
-        }else{
-            this.filename = util.format("%s/%s.h264", this.folder, new Date().toJSON());
+        if (file) {
+            // If the file is absolute, use it alone instead of prepending the folder
+            if (file.substr(0, 1) === '/') {
+                this.filename = file;
+            } else {
+                this.filename = util.format('%s/%s', this.folder, file);
+            }
+        } else {
+            this.filename = util.format('%s/%s.h264', this.folder, new Date().toJSON());
         }
 
         this.output(this.filename);
 
-        this.command = "raspivid";
-
-
-        //if we are streaming remove output command
-        if(this.parameters['-o - >']){
-            delete this.parameters["-o"];
-        }
-
-        var key;
-        for(key in this.parameters){
-            if(this.parameters[key]){
-                this.command+= util.format(' %s %s ', key, this.parameters[key]);
-            }
-
-        }
-
-        var exec = require('child_process').exec,child;
-
+        this.command = 'raspivid';
         var self = this;
 
-        child = exec(this.command,function (error, stdout, stderr) {
+        // if we are streaming remove output command
+        if (this.parameters['-o - >']) {
+            delete this.parameters['-o'];
+        }
 
-            if(callback!==undefined){
-                callback(self.filename,stderr);
+        for (var key in this.parameters) {
+            if (this.parameters[key] === true) {
+                // This is a switch, only needs the parameter not the value
+                this.command += ' ' + key;
+            } else {
+                this.command += util.format(' %s "%s"', key, this.parameters[key]);
             }
+        }
 
+        var exec = require('child_process').exec;
+        exec(this.command, function (error, stdout, stderr) {
+            if (typeof callback === 'function') {
+                callback(self.filename, stderr);
+            }
         });
     };
 
@@ -123,9 +123,11 @@ module.exports = function Camera () {
      * @param {{}}  options
      */
     this.options = function (options) {
+        var self = this;
+
         _.map(options, function (value, key) {
-            if (typeof this[key] === 'function') {
-                this[key](value);
+            if (typeof self[key] === 'function') {
+                self[key](value);
             }
         });
 
