@@ -16,8 +16,8 @@ module.exports = function Camera () {
      * @param {string|function}  file
      * @param {function}         callback
      */
-    this.takePicture = function takePicture (file, callback) {
-        // Support for takePicture(cb) instead of providing file
+    this.takePhoto = function takePhoto (file, callback) {
+        // Support for takePhoto(cb) instead of providing file
         if (typeof file === 'function') {
             callback = file;
             file     = null;
@@ -371,7 +371,7 @@ module.exports = function Camera () {
     /**
      * Set AWB gains - AWB mode must be off
      */
-    this.drc = function () {
+    this.awbgains = function () {
         this.parameters['-awbg'] = true;
         return this;
     };
@@ -379,7 +379,7 @@ module.exports = function Camera () {
     /**
      * Set DRC Level
      *
-     * @param {string}  value
+     * @param {string}  value   off,low,med,high
      */
     this.drc = function (value) {
         this.parameters['-drc'] = value;
@@ -439,21 +439,15 @@ module.exports = function Camera () {
     };
 
     /**
-     * ?
-     *
-     * @param {string}  value
+     * Add raw bayer data to jpeg metadata
      */
-    this.raw = function (value) {
-        if(value===undefined)
-            value="";
-
-        this.parameters["-r"] = value;
-
+    this.raw = function () {
+        this.parameters['-r'] = true;
         return this;
     };
 
     /**
-     * ?
+     * Output filename
      *
      * @param {string}  value
      */
@@ -464,7 +458,7 @@ module.exports = function Camera () {
     };
 
     /**
-     * ?
+     * Link latest complete image to filename <filename>
      *
      * @param {string}  value
      */
@@ -474,22 +468,21 @@ module.exports = function Camera () {
     };
 
     /**
-     * ?
-     *
-     * @param {string}  value
+     * Output verbose information during run
+     * Doesn't really apply because we're running the process inside node
      */
-    this.verbose = function(value) {
-        this.parameters['-v'] = value;
+    this.verbose = function() {
+        this.parameters['-v'] = true;
         return this;
     };
 
     /**
-     * ?
+     * Time (in ms) before takes picture and shuts down (if not specified, set to 5s)
      *
      * @param {string}  value
      */
     this.timeout = function (value) {
-        this.parameters['-t'] = value;
+        this.parameters['-t'] = parseInt(value);
         return this;
     };
 
